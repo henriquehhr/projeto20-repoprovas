@@ -11,9 +11,11 @@ export async function authenticateUser(req: Request, res: Response, next: NextFu
   }
   const jwtKey = process.env.JWT_SECRET;
   const token = req.headers.authorization.slice(7);
-  if (jwt.verify(token, jwtKey)){
-    //res.locals.user = jwt.decode(token);
-    next();
+  try {
+    if (jwt.verify(token, jwtKey))
+      next();
+  } catch (error) {
+    throw {type: "Unauthorized", message: "Wrong credentials"};
   }
-  else throw {type: "Unauthorized", message: "Wrong credentials"};
+    
 }
