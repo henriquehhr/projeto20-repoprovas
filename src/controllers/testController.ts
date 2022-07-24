@@ -6,9 +6,10 @@ import * as testService from "../services/testService.js";
 export type GroupByOptions = "teachers" | "disciplines";
 
 export async function create(req: Request, res: Response) {
-  const {test, teacherId, disciplineId} = req.body //as CreateTest;
+  const {name, pdfUrl, categoryId, teacherId, disciplineId} = req.body;
+  const test = {name, pdfUrl, categoryId};
   await testService.create(test, teacherId, disciplineId);
-  res.send(201);
+  res.sendStatus(201);
 }
 
 export async function findAllGroupByOptions(req: Request, res: Response) {
