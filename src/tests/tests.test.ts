@@ -192,7 +192,7 @@ describe("GET /tests?grouBy=teachers", () => {
   it("given a valid test, it should return an object in the right format", async () => {
     await agent.post("/tests").send(validTest).set("Authorization", JWTtoken);
     const result = await agent.get("/tests?groupBy=teachers").set("Authorization", JWTtoken);
-    //expect(result.body.terms[0]?.disciplines[0]?.categories[0]?.tests[0]?.name).toEqual(validTest.name);
+    expect(result.body.teachers[0]?.categories[0]?.tests[0]?.name).toEqual(validTest.name);
   });
 });
 
