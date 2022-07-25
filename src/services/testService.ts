@@ -4,6 +4,8 @@ import * as teacherRepository from "../repositories/teacherRepository.js";
 import * as disciplineRepository from "../repositories/disciplineRepository.js";
 import * as teacherDisciplineRepository from "../repositories/teacherDisciplineRepository.js";
 import * as categaryRepository from "../repositories/categoryRepository.js";
+import * as termRepository from "../repositories/termRepository.js";
+import { prisma } from "@prisma/client";
 
 export async function create(test, teacherId: number, disciplineId: number) {
   const teacher = await teacherRepository.find(teacherId);
@@ -20,10 +22,37 @@ export async function create(test, teacherId: number, disciplineId: number) {
 }
 
 export async function findAllGroupByOptions(groupBy: GroupByOptions) {
-  let tests;
-  if(groupBy === "disciplines")
-    tests = testRepository.findAllGroupByDisciplines();
-  else if(groupBy === "teachers")
-    tests = testRepository.findAllGroupByTeachers();
-  return tests;
+  if(groupBy === "disciplines"){
+    const termsDisciplines = {terms: (await termRepository.findAllWithDisciplines())};
+    const categories = await categaryRepository.findAll();
+    for(let term of termsDisciplines.terms) {
+      for(let discipline of term.disciplines) {
+        discipline.categories = structuredClone(categories);
+        for(let category of discipline.categories) {
+          const tests = await testRepository.findByDisciplineAndCategory(discipline.id, category.id);
+          category.tests = structuredClone(tests);
+          for(let test of category.tests) {
+            test.teacher = await teacherRepository.findByTestId(test.id);
+          }
+        }
+      }
+    }
+    // await termsDisciplines.terms.forEach(async term => await term.disciplines.forEach(async discipline => {
+    //   discipline.categories = [...categories];
+    //   await discipline.categories.forEach(async category => {
+    //     console.log("disciplica: ", discipline.name, "| categoria: ", category.name);
+    //     const tests = await testRepository.findByDisciplineAndCategory(discipline.id, category.id);
+    //     category.tests = tests;
+    //     console.log("tests: ", tests);
+    //   });
+    // }));
+    
+    
+    
+    return termsDisciplines;
+  }
+  else if(groupBy === "teachers"){
+    const tests = await testRepository.findAllGroupByTeachers();
+    return tests;
+  }
 }
