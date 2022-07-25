@@ -5,6 +5,8 @@ dotenv.config();
 
 export async function authenticateUser(req: Request, res: Response, next: NextFunction) {
 
+  if(!req.headers.authorization)
+    throw {type: "Unprocessable entity", message: "Missing Authorization header"}
   const validateTokenFormat = req.headers.authorization.slice(0, 7);
   if (validateTokenFormat != "Bearer ") {
     throw {type: "Unprocessable entity", message: "Authorization header in wrong format"}
