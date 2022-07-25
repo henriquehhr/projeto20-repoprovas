@@ -14,11 +14,7 @@ const invalidEmail = {email: "henriquegmail.com", password: "1234"};
 const invalidRequestBody1 = {email: "henrique@gmail.com"};
 const invalidRequestBody2 = {password: "1234"};
 
-//beforeAll(async () => {
-//});
-
 beforeEach( async () => {
-  await prisma.$executeRaw`TRUNCATE TABLE tests CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE users;`;
 });
 
