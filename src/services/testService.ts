@@ -37,22 +37,24 @@ export async function findAllGroupByOptions(groupBy: GroupByOptions) {
         }
       }
     }
-    // await termsDisciplines.terms.forEach(async term => await term.disciplines.forEach(async discipline => {
-    //   discipline.categories = [...categories];
-    //   await discipline.categories.forEach(async category => {
-    //     console.log("disciplica: ", discipline.name, "| categoria: ", category.name);
-    //     const tests = await testRepository.findByDisciplineAndCategory(discipline.id, category.id);
-    //     category.tests = tests;
-    //     console.log("tests: ", tests);
-    //   });
-    // }));
-    
-    
     
     return termsDisciplines;
   }
   else if(groupBy === "teachers"){
-    const tests = await testRepository.findAllGroupByTeachers();
-    return tests;
+    const teachers = {teachers: (await teacherRepository.findAll())};
+    const categories = await categaryRepository.findAll();
+    for(let teacher of teachers.teachers) {
+      teacher.categories = structuredClone(categories);
+      for(let category of teacher.categories){
+        const tests = await testRepository.findByTeacherAndCategory(teacher.id, category.id);
+        category.tests = structuredClone(tests);
+        for(let test of category.tests){
+          const discipline = await disciplineRepository.findByTestId(test.id);
+          //console.log(discipline);
+          test.discipline = structuredClone(discipline.discipline);
+        }
+      }
+    }
+    return teachers;
   }
 }

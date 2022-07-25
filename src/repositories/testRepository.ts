@@ -23,4 +23,18 @@ export async function findByDisciplineAndCategory(disciplineId: number, category
   return tests;
 }
 
-export async function findAllGroupByTeachers() {}
+export async function findByTeacherAndCategory(teacherId: number, categoryId: number) {
+  const tests = await prisma.test.findMany({
+    where: {
+      AND: [
+        {
+          categoryId: categoryId
+        },
+        {
+          teacherDiscipline: { teacherId: teacherId}
+        }
+      ]
+    }
+  });
+  return tests;
+}

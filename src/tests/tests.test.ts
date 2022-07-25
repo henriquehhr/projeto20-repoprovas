@@ -156,11 +156,44 @@ describe("POST /tests", () => {
 
 });
 
-describe("", () => {
+describe("GET /tests?grouBy=disciplines", () => {
 
-  it("", async () => {
+  it("given an unauthorized user, it should return 401", async () => {
+    const result = await agent.get("/tests?groupBy=disciplines").set("Authorization", "Bearer 5454546");
+    expect(result.status).toEqual(401);
   });
 
+  it("given an authorized user, it should return 200", async () => {
+    await agent.post("/tests").send(validTest).set("Authorization", JWTtoken);
+    const result = await agent.get("/tests?groupBy=disciplines").set("Authorization", JWTtoken);
+    expect(result.status).toEqual(200);
+  });
+
+  it("given a valid test, it should return an object in the right format", async () => {
+    await agent.post("/tests").send(validTest).set("Authorization", JWTtoken);
+    const result = await agent.get("/tests?groupBy=disciplines").set("Authorization", JWTtoken);
+    expect(result.body.terms[0]?.disciplines[0]?.categories[0]?.tests[0]?.name).toEqual(validTest.name);
+  });
+
+});
+
+describe("GET /tests?grouBy=teachers", () => {
+  it("given an unauthorized user, it should return 401", async () => {
+    const result = await agent.get("/tests?groupBy=teachers").set("Authorization", "Bearer 5454546");
+    expect(result.status).toEqual(401);
+  });
+
+  it("given an authorized user, it should return 200", async () => {
+    await agent.post("/tests").send(validTest).set("Authorization", JWTtoken);
+    const result = await agent.get("/tests?groupBy=teachers").set("Authorization", JWTtoken);
+    expect(result.status).toEqual(200);
+  });
+
+  it("given a valid test, it should return an object in the right format", async () => {
+    await agent.post("/tests").send(validTest).set("Authorization", JWTtoken);
+    const result = await agent.get("/tests?groupBy=teachers").set("Authorization", JWTtoken);
+    //expect(result.body.terms[0]?.disciplines[0]?.categories[0]?.tests[0]?.name).toEqual(validTest.name);
+  });
 });
 
 afterAll(async () => {

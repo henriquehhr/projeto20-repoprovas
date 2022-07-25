@@ -26,3 +26,8 @@ export async function findByTestId(testId: number) {
   });
   return teacher.teacherDiscipline.teacher;
 }
+
+export async function findAll() {
+  const teachers: any[] = await prisma.teacher.findMany();
+  return teachers;
+}
